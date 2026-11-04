@@ -7,7 +7,7 @@
     
     <div class="relative z-10">
         <h2 class="text-xl md:text-2xl font-bold mb-1">Selamat datang kembali, {{ $siswa->name }}!</h2>
-        <p class="text-[11px] md:text-[13px] text-gray-400 mb-4 md:mb-6">{{ $siswa->classRoom->name ?? '-' }} - NIS {{ $siswa->nis }}</p>
+        <p class="text-[11px] md:text-[13px] text-gray-400 mb-4 md:mb-6">{{ $siswa->classRoom->name ?? '-' }} | NIS {{ $siswa->nis }}</p>
         
         <div class="flex items-center gap-3 md:gap-4 mb-2">
             <span class="text-2xl md:text-3xl font-bold">{{ $persen }}%</span>
@@ -25,7 +25,7 @@
                 <svg class="w-4 h-4 text-yellow-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4.5c-.77-.833-2.694-.833-3.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z"></path></svg>
                 Perhatian: {{ $missingTypes->first()->name }} belum diunggah. 
             </div>
-            <a href="https://wa.me/{{ $waliKelas->nip ?? '6281234567890' }}?text=Halo%20Bu%20{{ urlencode($waliKelas->name ?? 'Wali Kelas') }}%2C%20saya%20{{ urlencode($siswa->name) }}%20ingin%20bertanya%20mengenai%20dokumen%20yang%20belum%20saya%20unggah." target="_blank" class="underline font-bold ml-1 hover:text-white">Hubungi Wali Kelas</a>
+            <a href="https://wa.me/{{ $waliKelas->no_hp ?? '6281234567890' }}?text=Halo%20Bu%20{{ urlencode($waliKelas->name ?? 'Wali Kelas') }}%2C%20saya%20{{ urlencode($siswa->name) }}%20ingin%20bertanya%20mengenai%20dokumen%20yang%20belum%20saya%20unggah." target="_blank" class="underline font-bold ml-1 hover:text-white">Hubungi Wali Kelas</a>
         </div>
         @endif
     </div>
@@ -143,7 +143,7 @@
                     <p class="text-[10px] md:text-[11px] text-gray-500">Wali Kelas • {{ $siswa->classRoom->name ?? '-' }}</p>
                 </div>
             </div>
-            <a href="https://wa.me/{{ $waliKelas->nip ?? '6281234567890' }}?text=Halo%20Bu%20{{ urlencode($waliKelas->name ?? 'Wali Kelas') }}%2C%20saya%20{{ urlencode($siswa->name) }}%20ingin%20berkonsultasi." target="_blank" class="w-full block bg-[#10b981] hover:bg-green-600 text-white text-[11px] md:text-xs font-bold py-2 rounded-lg transition text-center">
+            <a href="https://wa.me/{{ $waliKelas->no_hp ?? '6281234567890' }}?text=Halo%20Bu%20{{ urlencode($waliKelas->name ?? 'Wali Kelas') }}%2C%20saya%20{{ urlencode($siswa->name) }}%20ingin%20berkonsultasi." target="_blank" class="w-full block bg-[#10b981] hover:bg-green-600 text-white text-[11px] md:text-xs font-bold py-2 rounded-lg transition text-center">
                 Hubungi via WhatsApp
             </a>
         </div>

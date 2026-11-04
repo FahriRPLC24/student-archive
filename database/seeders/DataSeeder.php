@@ -26,18 +26,37 @@ class DataSeeder extends Seeder
                 'email' => 'anis@studentarchive.test',
                 'password' => Hash::make('password'),
                 'role' => 'admin',
+                'no_hp' => '6281234567890', // Nomor Dummy Admin
             ]
         );
         $admin->assignRole('admin');
 
-        // 3. Buat Guru (Wali Kelas)
-        $guruA = User::updateOrCreate(['nip' => '198812212014022003'], ['name' => 'Indah Widiningrum, S.Pd.', 'email' => 'guru.rpla@studentarchive.test', 'password' => Hash::make('password'), 'role' => 'guru']);
+        // 3. Buat Guru (Wali Kelas) + NIP Asli & No HP
+        $guruA = User::updateOrCreate(['nip' => '198812212014022003'], [
+            'name' => 'Indah Widiningrum, S.Pd.',
+            'email' => 'guru.rpla@studentarchive.test',
+            'password' => Hash::make('password'),
+            'role' => 'guru',
+            'no_hp' => '6281225632164',
+        ]);
         $guruA->assignRole('guru');
 
-        $guruB = User::updateOrCreate(['nip' => '199301272020122006'], ['name' => 'Hilma Gustami, S.Pd.', 'email' => 'guru.rplb@studentarchive.test', 'password' => Hash::make('password'), 'role' => 'guru']);
+        $guruB = User::updateOrCreate(['nip' => '199301272020122006'], [
+            'name' => 'Hilma Gustami, S.Pd.',
+            'email' => 'guru.rplb@studentarchive.test',
+            'password' => Hash::make('password'),
+            'role' => 'guru',
+            'no_hp' => '6285729012020',
+        ]);
         $guruB->assignRole('guru');
 
-        $guruC = User::updateOrCreate(['nip' => '198406292010012028'], ['name' => 'Kurniasari, S.Pd., S.Kom.', 'email' => 'guru.rplc@studentarchive.test', 'password' => Hash::make('password'), 'role' => 'guru']);
+        $guruC = User::updateOrCreate(['nip' => '198406292010012028'], [
+            'name' => 'Kurniasari, S.Pd., S.Kom.',
+            'email' => 'guru.rplc@studentarchive.test',
+            'password' => Hash::make('password'),
+            'role' => 'guru',
+            'no_hp' => '6281393332966',
+        ]);
         $guruC->assignRole('guru');
 
         // 4. Buat Kelas
@@ -85,7 +104,15 @@ class DataSeeder extends Seeder
         foreach ($siswaRplA as $data) {
             $user = User::updateOrCreate(
                 ['nis' => $data['nis']],
-                ['name' => $data['nama'], 'email' => null, 'password' => Hash::make('password'), 'nip' => $data['tgl'], 'role' => 'siswa', 'class_id' => $rplA->id]
+                [
+                    'name' => $data['nama'],
+                    'email' => null,
+                    'password' => Hash::make('password'),
+                    'nip' => $data['tgl'],
+                    'no_hp' => null,
+                    'role' => 'siswa',
+                    'class_id' => $rplA->id,
+                ]
             );
             $user->assignRole('siswa');
         }
@@ -128,12 +155,20 @@ class DataSeeder extends Seeder
         foreach ($siswaRplB as $data) {
             $user = User::updateOrCreate(
                 ['nis' => $data['nis']],
-                ['name' => $data['nama'], 'email' => null, 'password' => Hash::make('password'), 'nip' => $data['tgl'], 'role' => 'siswa', 'class_id' => $rplB->id]
+                [
+                    'name' => $data['nama'],
+                    'email' => null,
+                    'password' => Hash::make('password'),
+                    'nip' => $data['tgl'],
+                    'no_hp' => null,
+                    'role' => 'siswa',
+                    'class_id' => $rplB->id,
+                ]
             );
             $user->assignRole('siswa');
         }
 
-        // 7. DATA SISWA XII RPL C (LENGKAP DARI EXCEL)
+        // 7. DATA SISWA XII RPL C (LENGKAP)
         $siswaRplC = [
             ['nama' => 'Abdul Aziz Nurrahman', 'nis' => '24122', 'tgl' => '2008-08-12'],
             ['nama' => 'Adiputra Arya Sena', 'nis' => '24123', 'tgl' => '2009-02-09'],
@@ -172,12 +207,20 @@ class DataSeeder extends Seeder
         foreach ($siswaRplC as $data) {
             $user = User::updateOrCreate(
                 ['nis' => $data['nis']],
-                ['name' => $data['nama'], 'email' => null, 'password' => Hash::make('password'), 'nip' => $data['tgl'], 'role' => 'siswa', 'class_id' => $rplC->id]
+                [
+                    'name' => $data['nama'],
+                    'email' => null,
+                    'password' => Hash::make('password'),
+                    'nip' => $data['tgl'],
+                    'no_hp' => null,
+                    'role' => 'siswa',
+                    'class_id' => $rplC->id,
+                ]
             );
             $user->assignRole('siswa');
         }
 
-        // 8. Jenis Dokumen
+        // 8. Jenis Dokumen Wajib
         $types = [
             ['name' => 'Raport Semester 1', 'code' => 'raport1', 'is_required' => true],
             ['name' => 'Raport Semester 2', 'code' => 'raport2', 'is_required' => true],
