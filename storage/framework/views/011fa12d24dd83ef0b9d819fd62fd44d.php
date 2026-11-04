@@ -3,7 +3,6 @@
 <?php $__env->startSection('title', 'Manajemen Pengguna'); ?>
 
 <?php $__env->startSection('content'); ?>
-<!-- Notifikasi -->
 <?php if(session('success')): ?>
     <div class="bg-green-100 text-green-700 p-3 rounded-lg mb-4 text-sm font-medium border border-green-200">
         <?php echo e(session('success')); ?>
@@ -33,7 +32,6 @@
         <table class="w-full text-left border-collapse min-w-[700px]">
             <thead>
                 <tr class="bg-gray-50 text-gray-500 text-[11px] uppercase tracking-wider border-b border-gray-100">
-                    <!-- Ubah Header jadi Nama Pengguna -->
                     <th class="px-6 py-4 font-bold">Nama Pengguna</th>
                     <th class="px-6 py-4 font-bold">Role</th>
                     <th class="px-6 py-4 font-bold">NIS / NIP</th>
@@ -45,7 +43,6 @@
                 <?php $__currentLoopData = $users; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $user): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                 <tr class="hover:bg-gray-50">
                     <td class="px-6 py-4">
-                        <!-- Hanya Tampilkan Nama, Email Dihapus -->
                         <p class="font-bold text-gray-800"><?php echo e($user->name); ?></p>
                     </td>
                     <td class="px-6 py-4">
@@ -62,15 +59,11 @@
                     <td class="px-6 py-4 text-gray-600"><?php echo e($user->nis ?? $user->nip ?? '-'); ?></td>
                     <td class="px-6 py-4 text-gray-600"><?php echo e($user->classRoom->name ?? '-'); ?></td>
                     
-                    <!-- KOLOM AKSI (Hapus) -->
                     <td class="px-6 py-4 text-right">
-                        <form action="<?php echo e(route('admin.users.destroy', $user->id)); ?>" method="POST" class="inline-block" onsubmit="return confirm('Apakah Anda yakin ingin menghapus pengguna ini? Tindakan ini tidak dapat dibatalkan.');">
-                            <?php echo csrf_field(); ?>
-                            <?php echo method_field('DELETE'); ?>
-                            <button type="submit" class="text-red-500 hover:text-red-700 font-bold text-xs bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded transition border border-red-100">
-                                Hapus
-                            </button>
-                        </form>
+                        <!-- Tombol Hapus yang memicu modal custom -->
+                        <button type="button" onclick="konfirmasiHapus(<?php echo e($user->id); ?>, '<?php echo e($user->name); ?>')" class="text-red-500 hover:text-red-700 font-bold text-xs bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded transition border border-red-100">
+                            Hapus
+                        </button>
                     </td>
                 </tr>
                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
@@ -107,7 +100,6 @@
                 </div>
             </div>
 
-            <!-- Email tetap ada di form untuk keperluan sistem, tapi di tabel tidak ditampilkan -->
             <div id="fieldEmailPassword" class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4 hidden">
                 <div>
                     <label class="block text-xs font-bold text-gray-600 mb-1.5">Email (Opsional)</label>
@@ -152,6 +144,26 @@
     </div>
 </div>
 
+<!-- MODAL KONFIRMASI HAPUS CUSTOM -->
+<div id="modalHapus" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(17, 24, 39, 0.7); z-index: 9999; align-items: center; justify-content: center; backdrop-filter: blur(4px); padding: 1rem;">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6" style="margin: auto; position: relative;">
+        <div class="w-12 h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center mb-4 mx-auto">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4.5c-.77-.833-2.694-.833-3.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z"></path></svg>
+        </div>
+        <h3 class="text-xl font-bold text-gray-900 text-center mb-2">Hapus Pengguna?</h3>
+        <p class="text-sm text-gray-500 text-center mb-6">Apakah Anda yakin ingin menghapus <b id="namaHapus"></b>? Tindakan ini tidak dapat dibatalkan.</p>
+        
+        <form id="formHapus" method="POST">
+            <?php echo csrf_field(); ?>
+            <?php echo method_field('DELETE'); ?>
+            <div class="flex justify-center gap-3">
+                <button type="button" onclick="document.getElementById('modalHapus').style.display = 'none'" class="px-5 py-2.5 text-sm font-medium text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition">Batal</button>
+                <button type="submit" class="px-5 py-2.5 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 shadow-md transition">Ya, Hapus</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script>
     function toggleFields() {
         const role = document.getElementById('roleSelect').value;
@@ -174,6 +186,13 @@
         }
     }
     document.addEventListener('DOMContentLoaded', toggleFields);
+
+    // Fungsi untuk memunculkan modal hapus custom
+    function konfirmasiHapus(id, nama) {
+        document.getElementById('namaHapus').innerText = nama;
+        document.getElementById('formHapus').action = '/admin/users/' + id;
+        document.getElementById('modalHapus').style.display = 'flex';
+    }
 </script>
 <?php $__env->stopSection(); ?>
 <?php echo $__env->make('layouts.admin', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\ASM1\student-archive\resources\views/admin/users.blade.php ENDPATH**/ ?>

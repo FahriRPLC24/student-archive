@@ -15,7 +15,7 @@
         <h2 class="text-xl font-bold text-gray-800">Kelola Kelas & Jurusan</h2>
         <p class="text-sm text-gray-500 mt-1">Kelola struktur kelas, jurusan, dan pantau kelengkapan berkas tiap rombel.</p>
     </div>
-    <button onclick="bukaModalTambah()" class="bg-[#4F46E5] hover:bg-blue-700 text-white rounded-lg text-sm px-4 py-2 font-medium flex items-center gap-2 shadow-sm">
+    <button onclick="document.getElementById('modalKelas').style.display = 'flex'" class="bg-[#4F46E5] hover:bg-blue-700 text-white rounded-lg text-sm px-4 py-2 font-medium flex items-center gap-2 shadow-sm">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
         Tambah Kelas Baru
     </button>
@@ -35,25 +35,20 @@
         <div class="mb-5">
             <div class="flex justify-between text-xs font-bold text-gray-700 mb-1.5">
                 <span>Progress Kelengkapan</span>
-                <!-- Menampilkan persentase asli dari DB -->
                 <span class="<?php echo e($class->persen_kelengkapan >= 80 ? 'text-green-500' : ($class->persen_kelengkapan >= 50 ? 'text-blue-500' : 'text-orange-500')); ?>">
                     <?php echo e($class->persen_kelengkapan); ?>%
                 </span>
             </div>
             <div class="w-full bg-gray-100 rounded-full h-2">
-                <!-- Progress bar dinamis -->
                 <div class="<?php echo e($class->persen_kelengkapan >= 80 ? 'bg-[#10b981]' : ($class->persen_kelengkapan >= 50 ? 'bg-blue-500' : 'bg-[#f59e0b]')); ?> h-2 rounded-full transition-all duration-500" style="width: <?php echo e($class->persen_kelengkapan); ?>%"></div>
             </div>
         </div>
 
         <div class="flex gap-2">
-            <form action="<?php echo e(route('admin.kelas.destroy', $class->id)); ?>" method="POST" class="flex-1">
-                <?php echo csrf_field(); ?>
-                <?php echo method_field('DELETE'); ?>
-                <button type="submit" class="w-full border border-red-200 text-red-500 rounded-lg text-sm py-2 font-medium hover:bg-red-50 transition" onclick="return confirm('Hapus kelas ini?')">
-                    Hapus
-                </button>
-            </form>
+            <!-- Tombol Hapus Custom -->
+            <button type="button" onclick="konfirmasiHapusKelas(<?php echo e($class->id); ?>, '<?php echo e($class->name); ?>')" class="flex-1 border border-red-200 text-red-500 rounded-lg text-sm py-2 font-medium hover:bg-red-50 transition">
+                Hapus
+            </button>
             
             <button onclick="bukaModalEdit(<?php echo e($class->id); ?>, '<?php echo e($class->name); ?>', '<?php echo e($class->grade); ?>', '<?php echo e($class->major); ?>')" class="flex-1 bg-[#4F46E5] hover:bg-blue-700 text-white rounded-lg text-sm py-2 font-medium flex items-center justify-center gap-1 shadow-sm">
                 Detail
@@ -68,11 +63,11 @@
 </div>
 
 <!-- MODAL TAMBAH KELAS -->
-<div id="modalTambah" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(17, 24, 39, 0.7); z-index: 9999; align-items: center; justify-content: center; backdrop-filter: blur(4px);">
+<div id="modalKelas" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(17, 24, 39, 0.7); z-index: 9999; align-items: center; justify-content: center; backdrop-filter: blur(4px); padding: 1rem;">
     <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6" style="margin: auto; position: relative;">
         <div class="flex justify-between items-center mb-5 border-b pb-3">
             <h3 class="text-lg font-bold text-gray-900">Tambah Kelas Baru</h3>
-            <button onclick="tutupModalTambah()" class="text-gray-400 hover:text-gray-600">
+            <button onclick="document.getElementById('modalKelas').style.display = 'none'" class="text-gray-400 hover:text-gray-600">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
         </div>
@@ -91,19 +86,19 @@
                 <input type="text" name="major" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none" required>
             </div>
             <div class="flex justify-end gap-2">
-                <button type="button" onclick="tutupModalTambah()" class="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200">Batal</button>
+                <button type="button" onclick="document.getElementById('modalKelas').style.display = 'none'" class="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200">Batal</button>
                 <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700">Simpan Kelas</button>
             </div>
         </form>
     </div>
 </div>
 
-<!-- MODAL EDIT KELAS (DETAIL) -->
-<div id="modalEdit" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(17, 24, 39, 0.7); z-index: 9999; align-items: center; justify-content: center; backdrop-filter: blur(4px);">
+<!-- MODAL EDIT KELAS -->
+<div id="modalEdit" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(17, 24, 39, 0.7); z-index: 9999; align-items: center; justify-content: center; backdrop-filter: blur(4px); padding: 1rem;">
     <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6" style="margin: auto; position: relative;">
         <div class="flex justify-between items-center mb-5 border-b pb-3">
             <h3 class="text-lg font-bold text-gray-900">Detail & Edit Kelas</h3>
-            <button onclick="tutupModalEdit()" class="text-gray-400 hover:text-gray-600">
+            <button onclick="document.getElementById('modalEdit').style.display = 'none'" class="text-gray-400 hover:text-gray-600">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
         </div>
@@ -123,21 +118,34 @@
                 <input type="text" name="major" id="edit_major" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none" required>
             </div>
             <div class="flex justify-end gap-2">
-                <button type="button" onclick="tutupModalEdit()" class="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200">Batal</button>
+                <button type="button" onclick="document.getElementById('modalEdit').style.display = 'none'" class="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200">Batal</button>
                 <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700">Simpan Perubahan</button>
             </div>
         </form>
     </div>
 </div>
 
-<script>
-    function bukaModalTambah() {
-        document.getElementById('modalTambah').style.display = 'flex';
-    }
-    function tutupModalTambah() {
-        document.getElementById('modalTambah').style.display = 'none';
-    }
+<!-- MODAL KONFIRMASI HAPUS KELAS CUSTOM -->
+<div id="modalHapusKelas" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(17, 24, 39, 0.7); z-index: 9999; align-items: center; justify-content: center; backdrop-filter: blur(4px); padding: 1rem;">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6" style="margin: auto; position: relative;">
+        <div class="w-12 h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center mb-4 mx-auto">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4.5c-.77-.833-2.694-.833-3.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z"></path></svg>
+        </div>
+        <h3 class="text-xl font-bold text-gray-900 text-center mb-2">Hapus Kelas?</h3>
+        <p class="text-sm text-gray-500 text-center mb-6">Apakah Anda yakin ingin menghapus kelas <b id="namaHapusKelas"></b>? Tindakan ini tidak dapat dibatalkan.</p>
+        
+        <form id="formHapusKelas" method="POST">
+            <?php echo csrf_field(); ?>
+            <?php echo method_field('DELETE'); ?>
+            <div class="flex justify-center gap-3">
+                <button type="button" onclick="document.getElementById('modalHapusKelas').style.display = 'none'" class="px-5 py-2.5 text-sm font-medium text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition">Batal</button>
+                <button type="submit" class="px-5 py-2.5 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 shadow-md transition">Ya, Hapus</button>
+            </div>
+        </form>
+    </div>
+</div>
 
+<script>
     function bukaModalEdit(id, name, grade, major) {
         document.getElementById('modalEdit').style.display = 'flex';
         document.getElementById('edit_name').value = name;
@@ -145,8 +153,12 @@
         document.getElementById('edit_major').value = major;
         document.getElementById('formEditKelas').action = '/admin/kelas/' + id;
     }
-    function tutupModalEdit() {
-        document.getElementById('modalEdit').style.display = 'none';
+
+    // Fungsi untuk memunculkan modal hapus kelas custom
+    function konfirmasiHapusKelas(id, nama) {
+        document.getElementById('namaHapusKelas').innerText = nama;
+        document.getElementById('formHapusKelas').action = '/admin/kelas/' + id;
+        document.getElementById('modalHapusKelas').style.display = 'flex';
     }
 </script>
 <?php $__env->stopSection(); ?>
