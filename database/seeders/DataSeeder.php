@@ -31,6 +31,19 @@ class DataSeeder extends Seeder
         );
         $admin->assignRole('admin');
 
+          // 2.b Buat Admin (Kurikulum) - Hudzaifah
+        $admin2 = User::updateOrCreate(
+            ['nip' => '198902082022211007'],
+            [
+                'name' => 'Hudzaifah, S.Pd.',
+                'email' => 'hudzaifah@studentarchive.test',
+                'password' => Hash::make('password'),
+                'role' => 'admin',
+                'no_hp' => '6281234567891', // Dummy No HP
+            ]
+        );
+        $admin2->assignRole('admin');
+
         // 3. Buat Guru (Wali Kelas) + NIP Asli & No HP
         $guruA = User::updateOrCreate(['nip' => '198812212014022003'], [
             'name' => 'Indah Widiningrum, S.Pd.',

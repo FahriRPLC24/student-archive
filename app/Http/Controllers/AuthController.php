@@ -20,16 +20,14 @@ class AuthController extends Controller
         ]);
 
         if ($request->login_type === 'staff') {
-            // LOGIN ADMIN / GURU (Pakai NIP)
+
             $request->validate([
                 'nip' => 'required|string',
                 'password' => 'required',
             ]);
 
-            // Cari user berdasarkan NIP
             $user = User::where('nip', $request->nip)->first();
 
-            // Cek apakah user ada dan password cocok
             if ($user && \Hash::check($request->password, $user->password)) {
                 Auth::login($user);
                 $request->session()->regenerate();
@@ -44,15 +42,15 @@ class AuthController extends Controller
             return back()->withErrors(['nip' => 'NIP atau password salah.']);
             
         } else {
-            // LOGIN SISWA (Pakai NIS & Tanggal Lahir)
+
             $request->validate([
                 'nis' => 'required|string',
                 'tanggal_lahir' => 'required|date',
             ]);
 
-            // Cari user siswa berdasarkan NIS dan kolom NIP (yang kita isi dengan tanggal lahir)
+            
             $user = User::where('nis', $request->nis)
-                        ->where('nip', $request->tanggal_lahir) // Pencocokan tanggal lahir
+                        ->where('nip', $request->tanggal_lahir)
                         ->where('role', 'siswa')
                         ->first();
 

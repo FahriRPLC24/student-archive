@@ -168,12 +168,12 @@ class AdminController extends Controller
     {
         $user = User::findOrFail($id);
 
-        // Keamanan: Cegah Admin menghapus akunnya sendiri yang sedang login[cite: 10]
+        // Keamanan: Cegah Admin menghapus akunnya sendiri yang sedang login
         if ($user->id === auth()->id()) {
-            return redirect()->back()->withErrors(['error' => 'Anda tidak dapat menghapus akun Anda sendiri.']);
+            return redirect()->back()->withErrors(['error' => 'Anda tidak dapat menghapus akun Anda sendiri yang sedang digunakan.']);
         }
 
-        // Hapus user[cite: 10]
+        // Hapus user
         $user->delete();
 
         return redirect()->back()->with('success', 'Pengguna berhasil dihapus dari sistem.');

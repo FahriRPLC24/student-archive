@@ -3,6 +3,7 @@
 @section('title', 'Manajemen Pengguna')
 
 @section('content')
+<!-- Notifikasi -->
 @if(session('success'))
     <div class="bg-green-100 text-green-700 p-3 rounded-lg mb-4 text-sm font-medium border border-green-200">
         {{ session('success') }}
@@ -55,10 +56,14 @@
                     <td class="px-6 py-4 text-gray-600">{{ $user->classRoom->name ?? '-' }}</td>
                     
                     <td class="px-6 py-4 text-right">
-                        <!-- Tombol Hapus yang memicu modal custom -->
-                        <button type="button" onclick="konfirmasiHapus({{ $user->id }}, '{{ $user->name }}')" class="text-red-500 hover:text-red-700 font-bold text-xs bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded transition border border-red-100">
-                            Hapus
-                        </button>
+                        <!-- CEK: Jika ID user sama dengan yang sedang login, jangan tampilkan tombol hapus -->
+                        @if($user->id === auth()->id())
+                            <span class="text-gray-400 text-xs italic font-medium px-3 py-1.5">Akun Anda</span>
+                        @else
+                            <button type="button" onclick="konfirmasiHapus({{ $user->id }}, '{{ $user->name }}')" class="text-red-500 hover:text-red-700 font-bold text-xs bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded transition border border-red-100">
+                                Hapus
+                            </button>
+                        @endif
                     </td>
                 </tr>
                 @endforeach
@@ -182,7 +187,6 @@
     }
     document.addEventListener('DOMContentLoaded', toggleFields);
 
-    // Fungsi untuk memunculkan modal hapus custom
     function konfirmasiHapus(id, nama) {
         document.getElementById('namaHapus').innerText = nama;
         document.getElementById('formHapus').action = '/admin/users/' + id;
