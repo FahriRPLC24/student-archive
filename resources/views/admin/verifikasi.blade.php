@@ -3,6 +3,7 @@
 @section('title', 'Antrean Verifikasi Berkas')
 
 @section('content')
+<!-- Notifikasi Sukses/Error -->
 @if(session('success'))
     <div class="bg-green-100 text-green-700 p-3 rounded-lg mb-4 text-sm font-medium border border-green-200">
         {{ session('success') }}
@@ -20,7 +21,6 @@
 </div>
 
 <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden flex flex-col">
-    <!-- BUNGKUS TABEL DENGAN OVERFLOW-X-AUTO -->
     <div class="overflow-x-auto">
         <table class="w-full text-left border-collapse min-w-[800px]">
             <thead>
@@ -45,23 +45,31 @@
                         <span class="bg-yellow-100 text-yellow-700 text-[11px] font-bold px-3 py-1 rounded-full">Pending</span>
                     </td>
                     <td class="px-6 py-4 text-right flex justify-end items-center gap-2">
+                        <!-- Tombol Lihat File -->
                         <a href="{{ asset('storage/' . $doc->file_path) }}" target="_blank" class="bg-gray-100 hover:bg-gray-200 text-gray-600 text-xs font-bold px-3 py-2 rounded-lg transition border border-gray-200">
                             Lihat File
                         </a>
+
+                        <!-- Tombol Setujui (Langsung Eksekusi) -->
                         <form action="{{ route('admin.verifikasi.approve', $doc->id) }}" method="POST">
                             @csrf
-                            <button type="submit" class="bg-[#10b981] hover:bg-green-600 text-white text-xs font-bold px-4 py-2 rounded-lg transition">Setujui</button>
+                            <button type="submit" class="bg-[#10b981] hover:bg-green-600 text-white text-xs font-bold px-4 py-2 rounded-lg transition shadow-sm">Setujui</button>
                         </form>
-                        <form action="{{ route('admin.verifikasi.reject', $doc->id) }}" method="POST">
-                            @csrf
-                            <button type="submit" class="bg-[#ef4444] hover:bg-red-600 text-white text-xs font-bold px-4 py-2 rounded-lg transition" onclick="return confirm('Tolak dokumen ini?')">Tolak</button>
-                        </form>
+
+                        <!-- Tombol Tolak (Memanggil Modal Custom) -->
+                        <button type="button" onclick="konfirmasiTolak({{ $doc->id }}, '{{ $doc->student->name }}', '{{ $doc->type->name }}')" class="bg-[#ef4444] hover:bg-red-600 text-white text-xs font-bold px-4 py-2 rounded-lg transition shadow-sm">
+                            Tolak
+                        </button>
                     </td>
                 </tr>
                 @empty
                 <tr>
                     <td colspan="5" class="px-6 py-12 text-center text-gray-500">
-                        <p class="text-base font-medium text-gray-600">Semua Berkas Sudah Diverifikasi</p>
+                        <div class="flex flex-col items-center justify-center">
+                            <svg class="w-12 h-12 text-gray-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            <p class="text-base font-medium text-gray-600">Semua Berkas Sudah Diverifikasi</p>
+                            <p class="text-xs mt-1">Tidak ada antrean dokumen yang menunggu pengecekan.</p>
+                        </div>
                     </td>
                 </tr>
                 @endforelse
@@ -69,4 +77,39 @@
         </table>
     </div>
 </div>
+
+<!-- MODAL KONFIRMASI TOLAK CUSTOM -->
+<div id="modalTolak" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(17, 24, 39, 0.7); z-index: 9999; align-items: center; justify-content: center; backdrop-filter: blur(4px); padding: 1rem;">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6" style="margin: auto; position: relative;">
+        <div class="w-12 h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center mb-4 mx-auto">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4.5c-.77-.833-2.694-.833-3.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z"></path></svg>
+        </div>
+        <h3 class="text-xl font-bold text-gray-900 text-center mb-2">Tolak Dokumen?</h3>
+        <p class="text-sm text-gray-500 text-center mb-6">
+            Apakah Anda yakin ingin menolak dokumen <b id="jenisDokumenTolak" class="text-gray-800"></b> milik <b id="namaSiswaTolak" class="text-gray-800"></b>? Siswa harus mengunggah ulang dokumen ini.
+        </p>
+        
+        <form id="formTolak" method="POST">
+            @csrf
+            <div class="flex justify-center gap-3">
+                <button type="button" onclick="document.getElementById('modalTolak').style.display = 'none'" class="px-5 py-2.5 text-sm font-medium text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition">Batal</button>
+                <button type="submit" class="px-5 py-2.5 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 shadow-md transition">Ya, Tolak</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function konfirmasiTolak(id, namaSiswa, jenisDokumen) {
+        // Isi data ke dalam modal
+        document.getElementById('namaSiswaTolak').innerText = namaSiswa;
+        document.getElementById('jenisDokumenTolak').innerText = jenisDokumen;
+        
+        // Atur URL action form agar mengarah ke route reject
+        document.getElementById('formTolak').action = '/admin/verifikasi/' + id + '/reject';
+        
+        // Tampilkan modal
+        document.getElementById('modalTolak').style.display = 'flex';
+    }
+</script>
 @endsection

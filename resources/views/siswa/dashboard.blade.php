@@ -7,7 +7,7 @@
     
     <div class="relative z-10">
         <h2 class="text-xl md:text-2xl font-bold mb-1">Selamat datang kembali, {{ $siswa->name }}!</h2>
-        <p class="text-[11px] md:text-[13px] text-gray-400 mb-4 md:mb-6">{{ $siswa->classRoom->name ?? '-' }} | NIS {{ $siswa->nis }}</p>
+        <p class="text-[11px] md:text-[13px] text-gray-400 mb-4 md:mb-6">{{ $siswa->classRoom->name ?? '-' }} - NIS {{ $siswa->nis }}</p>
         
         <div class="flex items-center gap-3 md:gap-4 mb-2">
             <span class="text-2xl md:text-3xl font-bold">{{ $persen }}%</span>
@@ -77,15 +77,29 @@
                     {{ $doc->uploaded_at ? $doc->uploaded_at->format('d M Y') : '-' }}
                 </p>
                 
+                <!-- LOGIKA TOMBOL AKSI -->
                 <div class="flex gap-2">
-                    <a href="{{ asset('storage/' . $doc->file_path) }}" target="_blank" class="flex-1 border border-gray-200 rounded-lg py-1.5 text-[10px] md:text-xs font-medium text-gray-600 hover:bg-gray-50 flex items-center justify-center gap-1">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg> 
-                        Lihat
-                    </a>
-                    <a href="{{ asset('storage/' . $doc->file_path) }}" download class="flex-1 border border-gray-200 rounded-lg py-1.5 text-[10px] md:text-xs font-medium text-gray-600 hover:bg-gray-50 flex items-center justify-center gap-1">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg> 
-                        Unduh
-                    </a>
+                    @if($doc->status == 'verified')
+                        <!-- Jika Verified: Tampilkan Lihat & Unduh -->
+                        <a href="{{ asset('storage/' . $doc->file_path) }}" target="_blank" class="flex-1 border border-gray-200 rounded-lg py-1.5 text-[10px] md:text-xs font-medium text-gray-600 hover:bg-gray-50 flex items-center justify-center gap-1">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg> 
+                            Lihat
+                        </a>
+                        <a href="{{ asset('storage/' . $doc->file_path) }}" download class="flex-1 border border-gray-200 rounded-lg py-1.5 text-[10px] md:text-xs font-medium text-gray-600 hover:bg-gray-50 flex items-center justify-center gap-1">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg> 
+                            Unduh
+                        </a>
+                    @elseif($doc->status == 'pending')
+                        <!-- Jika Pending: Sembunyikan tombol, ganti dengan teks -->
+                        <div class="w-full text-center py-2 text-[10px] md:text-xs text-gray-400 italic bg-gray-50 rounded-lg">
+                            Menunggu Verifikasi Admin
+                        </div>
+                    @else
+                        <!-- Jika Ditolak: Sembunyikan tombol, ganti dengan teks -->
+                        <div class="w-full text-center py-2 text-[10px] md:text-xs text-red-500 font-medium bg-red-50 rounded-lg">
+                            Berkas Ditolak. Silakan hubungi Guru.
+                        </div>
+                    @endif
                 </div>
             </div>
             @empty
