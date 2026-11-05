@@ -26,6 +26,13 @@
     </button>
 </div>
 
+{{-- Info jika sedang mencari --}}
+@if(request('search'))
+    <div class="mb-4 text-sm text-gray-600">
+        Menampilkan hasil pencarian untuk: <b>"{{ request('search') }}"</b>. <a href="{{ route('admin.users') }}" class="text-blue-600 hover:underline">Reset</a>
+    </div>
+@endif
+
 <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden flex flex-col">
     <div class="overflow-x-auto">
         <table class="w-full text-left border-collapse min-w-[700px]">
@@ -39,7 +46,7 @@
                 </tr>
             </thead>
             <tbody class="divide-y divide-gray-50 text-sm">
-                @foreach($users as $user)
+                @forelse($users as $user)
                 <tr class="hover:bg-gray-50">
                     <td class="px-6 py-4">
                         <p class="font-bold text-gray-800">{{ $user->name }}</p>
@@ -56,7 +63,6 @@
                     <td class="px-6 py-4 text-gray-600">{{ $user->classRoom->name ?? '-' }}</td>
                     
                     <td class="px-6 py-4 text-right">
-                        <!-- CEK: Jika ID user sama dengan yang sedang login, jangan tampilkan tombol hapus -->
                         @if($user->id === auth()->id())
                             <span class="text-gray-400 text-xs italic font-medium px-3 py-1.5">Akun Anda</span>
                         @else
@@ -66,7 +72,13 @@
                         @endif
                     </td>
                 </tr>
-                @endforeach
+                @empty
+                <tr>
+                    <td colspan="5" class="px-6 py-8 text-center text-gray-500">
+                        {{ request('search') ? 'Pengguna tidak ditemukan.' : 'Belum ada data pengguna.' }}
+                    </td>
+                </tr>
+                @endforelse
             </tbody>
         </table>
     </div>

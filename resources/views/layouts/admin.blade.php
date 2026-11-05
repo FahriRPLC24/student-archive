@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StudentArchive - Kurikulum</title>
+    <title>StudentArchive - @yield('title', 'Kurikulum')</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style> body { font-family: 'Inter', sans-serif; } </style>
@@ -11,7 +11,7 @@
 <body class="bg-[#F4F6F9] text-gray-800 overflow-hidden">
     <div class="flex h-screen overflow-hidden">
         
-        <!-- OVERLAY GELAP -->
+        <!-- OVERLAY GELAP (Mobile) -->
         <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/50 z-30 hidden md:hidden transition-opacity"></div>
 
         <!-- SIDEBAR -->
@@ -95,20 +95,28 @@
             </div>
         </aside>
 
-        <!-- KONTEN UTAMA (Tambahkan w-full min-w-0) -->
+        <!-- KONTEN UTAMA -->
         <main class="flex-1 flex flex-col overflow-hidden w-full min-w-0">
             <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 md:px-8 shrink-0">
                 <div class="flex items-center gap-3">
                     <button onclick="toggleSidebar()" class="md:hidden text-gray-500 hover:text-gray-800">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
                     </button>
-                    <span class="font-medium text-gray-800 hidden sm:block">@yield('title', 'Dashboard')</span>
+                    <span class="font-medium text-gray-800 text-sm md:text-base">@yield('title', 'Dashboard')</span>
                 </div>
                 
-                <form action="{{ route('admin.siswa') }}" method="GET" class="relative w-full max-w-[200px] md:max-w-[300px]">
-                    <svg class="w-4 h-4 text-gray-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari..." class="w-full pl-9 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
-                </form>
+                <!-- FORM PENCARIAN DINAMIS MENYESUAIKAN HALAMAN -->
+                @if(request()->routeIs('admin.siswa'))
+                    <form action="{{ route('admin.siswa') }}" method="GET" class="relative w-full max-w-[200px] md:max-w-[300px]">
+                        <svg class="w-4 h-4 text-gray-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari siswa..." class="w-full pl-9 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+                    </form>
+                @elseif(request()->routeIs('admin.users'))
+                    <form action="{{ route('admin.users') }}" method="GET" class="relative w-full max-w-[200px] md:max-w-[300px]">
+                        <svg class="w-4 h-4 text-gray-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari pengguna..." class="w-full pl-9 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+                    </form>
+                @endif
             </header>
 
             <div class="flex-1 overflow-y-auto p-4 md:p-8">

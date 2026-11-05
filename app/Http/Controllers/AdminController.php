@@ -81,8 +81,12 @@ class AdminController extends Controller
     public function kelas()
     {
         $totalDocTypes = DocumentType::where('is_required', true)->count();
+
+        // Ambil kelas beserta jumlah siswanya, DAN data siswanya (diurutkan A-Z)
         $classes = ClassRoom::withCount(['students' => function ($query) {
             $query->where('role', 'siswa');
+        }])->with(['students' => function($query) {
+            $query->where('role', 'siswa')->orderBy('name', 'asc');
         }])->get();
 
         foreach ($classes as $class) {
@@ -134,36 +138,67 @@ class AdminController extends Controller
     }
 
     // ================= USERS =================
-    public function users()
+    public function users(Request $request)
     {
-        $users = User::with('classRoom')->get();
-        $classes = ClassRoom::all();
-        return view('admin.users', compact('users', 'classes'));
-    }
+        $search = $request->input('search');
 
+        $query = User::with('classRoom');
+
+        if ($search) {
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('nis', 'like', "%{$search}%")
+                  ->orWhere('nip', 'like', "%{$search}%");
+            });
+        }
+
+        $users = $query->get();
+        $classes = ClassRoom::all();
+        
+        return view('admin.users', compact('users', 'classes', 'search'));
+    }
     public function storeUser(Request $request)
     {
         $request->validate([
-            'name' => 'required', 'email' => 'nullable|email|unique:users', 'password' => 'nullable|min:6',
-            'role' => 'required|in:admin,guru,siswa', 'nis' => 'nullable', 'nip' => 'nullable', 'class_id' => 'nullable|exists:classes,id'
+            'name' => 'required|string|max:255',
+            'email' => 'nullable|email|unique:users',
+            'password' => 'nullable|min:6',
+            'role' => 'required|in:admin,guru,siswa',
+            'nis' => 'nullable|string|unique:users',
+            'nip' => 'nullable|string|unique:users',
+            'tanggal_lahir' => 'nullable|date', // Validasi input tanggal lahir
+            'class_id' => 'nullable|exists:classes,id',
         ]);
 
+        // Cek password untuk Admin/Guru
         if ($request->role !== 'siswa' && (empty($request->email) || empty($request->password))) {
             return redirect()->back()->withErrors(['email' => 'Email dan Password wajib diisi untuk Kurikulum/Guru.']);
         }
 
-        $user = User::create([
+        // LOGIKA PENYIMPANAN
+        $data = [
             'name' => $request->name,
             'email' => $request->role === 'siswa' ? null : $request->email,
             'password' => $request->role === 'siswa' ? Hash::make('password123') : Hash::make($request->password),
-            'role' => $request->role, 'nis' => $request->nis, 'nip' => $request->nip, 'class_id' => $request->class_id,
-        ]);
+            'role' => $request->role,
+            'class_id' => $request->class_id,
+        ];
+
+        // Jika Siswa: NIS disimpan, Tanggal Lahir disimpan ke kolom NIP
+        if ($request->role === 'siswa') {
+            $data['nis'] = $request->nis;
+            $data['nip'] = $request->tanggal_lahir; 
+        } else {
+            // Jika Guru/Admin: NIP disimpan
+            $data['nip'] = $request->nip;
+        }
+
+        $user = User::create($data);
         $user->assignRole($request->role);
 
         return redirect()->back()->with('success', 'User berhasil ditambahkan!');
     }
 
-    // --- TAMBAHAN METHOD INI UNTUK HAPUS USER (Sesuai Gambar) ---[cite: 10]
     public function destroyUser($id)
     {
         $user = User::findOrFail($id);

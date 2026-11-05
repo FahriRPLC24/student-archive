@@ -45,12 +45,12 @@
                         <span class="bg-yellow-100 text-yellow-700 text-[11px] font-bold px-3 py-1 rounded-full">Pending</span>
                     </td>
                     <td class="px-6 py-4 text-right flex justify-end items-center gap-2">
-                        <!-- Tombol Lihat File -->
-                        <a href="{{ asset('storage/' . $doc->file_path) }}" target="_blank" class="bg-gray-100 hover:bg-gray-200 text-gray-600 text-xs font-bold px-3 py-2 rounded-lg transition border border-gray-200">
+                        <!-- Tombol Lihat File (Memanggil Modal) -->
+                        <button type="button" onclick="bukaPreview('{{ asset('storage/' . $doc->file_path) }}', '{{ $doc->type->name }} - {{ $doc->student->name }}')" class="bg-gray-100 hover:bg-gray-200 text-gray-600 text-xs font-bold px-3 py-2 rounded-lg transition border border-gray-200">
                             Lihat File
-                        </a>
+                        </button>
 
-                        <!-- Tombol Setujui (Langsung Eksekusi) -->
+                        <!-- Tombol Setujui -->
                         <form action="{{ route('admin.verifikasi.approve', $doc->id) }}" method="POST">
                             @csrf
                             <button type="submit" class="bg-[#10b981] hover:bg-green-600 text-white text-xs font-bold px-4 py-2 rounded-lg transition shadow-sm">Setujui</button>
@@ -78,6 +78,24 @@
     </div>
 </div>
 
+<!-- MODAL PREVIEW FILE (Diperbesar 95vw x 95vh) -->
+<div id="modalPreview" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(17, 24, 39, 0.9); z-index: 10000; align-items: center; justify-content: center; backdrop-filter: blur(4px); padding: 1rem;">
+    <div class="bg-white rounded-2xl shadow-2xl w-[95vw] h-[95vh] flex flex-col" style="margin: auto; position: relative;">
+        <!-- Header Modal -->
+        <div class="flex justify-between items-center p-4 border-b border-gray-200 bg-gray-50 rounded-t-2xl">
+            <h3 class="text-lg font-bold text-gray-800 truncate" id="previewTitle">Preview Dokumen</h3>
+            <button onclick="document.getElementById('modalPreview').style.display = 'none'; document.getElementById('previewIframe').src = '';" class="text-gray-400 hover:text-red-500 bg-white border border-gray-200 p-2 rounded-lg transition shadow-sm">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+        
+        <!-- Body Modal (Isi File) -->
+        <div class="flex-1 bg-gray-100 p-2 overflow-hidden rounded-b-2xl">
+            <iframe id="previewIframe" src="" class="w-full h-full rounded-lg border-0 shadow-inner bg-white"></iframe>
+        </div>
+    </div>
+</div>
+
 <!-- MODAL KONFIRMASI TOLAK CUSTOM -->
 <div id="modalTolak" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(17, 24, 39, 0.7); z-index: 9999; align-items: center; justify-content: center; backdrop-filter: blur(4px); padding: 1rem;">
     <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6" style="margin: auto; position: relative;">
@@ -100,15 +118,25 @@
 </div>
 
 <script>
+    // Fungsi untuk menampilkan Preview File di dalam Modal
+    function bukaPreview(url, title) {
+        document.getElementById('previewTitle').innerText = title;
+        document.getElementById('previewIframe').src = url;
+        document.getElementById('modalPreview').style.display = 'flex';
+    }
+
+    // Fungsi untuk menutup modal preview ketika area luar diklik
+    document.getElementById('modalPreview').addEventListener('click', function(e) {
+        if (e.target === this) {
+            this.style.display = 'none';
+            document.getElementById('previewIframe').src = '';
+        }
+    });
+
     function konfirmasiTolak(id, namaSiswa, jenisDokumen) {
-        // Isi data ke dalam modal
         document.getElementById('namaSiswaTolak').innerText = namaSiswa;
         document.getElementById('jenisDokumenTolak').innerText = jenisDokumen;
-        
-        // Atur URL action form agar mengarah ke route reject
         document.getElementById('formTolak').action = '/admin/verifikasi/' + id + '/reject';
-        
-        // Tampilkan modal
         document.getElementById('modalTolak').style.display = 'flex';
     }
 </script>

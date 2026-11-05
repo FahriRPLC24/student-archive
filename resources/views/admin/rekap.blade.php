@@ -7,8 +7,8 @@
     <!-- Header Card -->
     <div class="flex justify-between items-start mb-8 pb-6 border-b border-gray-100">
         <div>
-            <p class="text-xs text-gray-500 mb-1">Tahun Ajaran: <span class="font-bold text-gray-800">2025/2026 Ganjil</span></p>
-            <p class="text-xs text-gray-500">2025/2026 Genap</p>
+            <h2 class="text-lg font-bold text-gray-800">Rekapitulasi Kelengkapan Berkas</h2>
+            <p class="text-xs text-gray-500 mt-1">Ringkasan persentase kelengkapan dokumen siswa per kelas.</p>
         </div>
         <div class="flex gap-2">
             <!-- Tombol Cetak (Trigger Print Browser) -->
@@ -17,7 +17,7 @@
                 Cetak
             </button>
             
-            <!-- Tombol Download PDF (Fungsional) -->
+            <!-- Tombol Download PDF -->
             <a href="{{ route('admin.siswa.export-pdf') }}" class="bg-[#4F46E5] hover:bg-blue-700 text-white rounded-lg text-sm px-4 py-2 font-medium flex items-center gap-2 shadow-sm transition">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
                 Download PDF Report

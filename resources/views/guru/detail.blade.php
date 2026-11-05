@@ -41,7 +41,6 @@
             <h3 class="font-bold text-gray-800 text-sm">Dokumen Akademik</h3>
             <p class="text-[11px] text-gray-500 mt-0.5">Kelola status dan berkas siswa.</p>
         </div>
-        <!-- Tombol Trigger Modal Upload -->
         <button onclick="bukaModalUpload()" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-4 py-2 rounded-lg transition shadow-sm">
             + Upload Dokumen Baru
         </button>
@@ -71,7 +70,10 @@
 
                 <div class="w-1/3 text-right space-x-3 flex justify-end items-center">
                     @if($doc)
-                        <a href="{{ asset('storage/' . $doc->file_path) }}" target="_blank" class="text-blue-600 hover:underline">Lihat</a>
+                        <!-- Tombol Lihat File (Memanggil Modal) -->
+                        <button type="button" onclick="bukaPreview('{{ asset('storage/' . $doc->file_path) }}', '{{ $doc->type->name }} - {{ $siswa->name }}')" class="text-blue-600 hover:underline">
+                            Lihat
+                        </button>
                         
                         <form action="{{ route('guru.destroy-document', $doc->id) }}" method="POST" class="inline">
                             @csrf
@@ -88,9 +90,7 @@
 </div>
 
 <!-- MODAL UPLOAD DOKUMEN -->
-<!-- KUNCINYA ADA DI style="..." DI BAWAH INI AGAR PASTI DI TENGAH -->
-<div id="modalUpload" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(17, 24, 39, 0.7); z-index: 9999; align-items: center; justify-content: center; backdrop-filter: blur(4px);">
-    
+<div id="modalUpload" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(17, 24, 39, 0.7); z-index: 9999; align-items: center; justify-content: center; backdrop-filter: blur(4px); padding: 1rem;">
     <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6" style="margin: auto; position: relative;">
         <div class="flex justify-between items-center mb-5 border-b pb-3">
             <h3 class="text-lg font-bold text-gray-900">Upload Dokumen</h3>
@@ -127,6 +127,22 @@
     </div>
 </div>
 
+<!-- MODAL PREVIEW FILE (Diperbesar 95vw x 95vh) -->
+<div id="modalPreview" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(17, 24, 39, 0.9); z-index: 10000; align-items: center; justify-content: center; backdrop-filter: blur(4px); padding: 1rem;">
+    <!-- Modal Box dibuat 95% layar -->
+    <div class="bg-white rounded-2xl shadow-2xl w-[95vw] h-[95vh] flex flex-col" style="margin: auto; position: relative;">
+        <div class="flex justify-between items-center p-4 border-b border-gray-200 bg-gray-50 rounded-t-2xl">
+            <h3 class="text-lg font-bold text-gray-800 truncate" id="previewTitle">Preview Dokumen</h3>
+            <button onclick="tutupPreview()" class="text-gray-400 hover:text-red-500 bg-white border border-gray-200 p-2 rounded-lg transition shadow-sm">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+        <div class="flex-1 bg-gray-100 p-2 overflow-hidden rounded-b-2xl">
+            <iframe id="previewIframe" src="" class="w-full h-full rounded-lg border-0 shadow-inner bg-white"></iframe>
+        </div>
+    </div>
+</div>
+
 <!-- SCRIPT -->
 <script>
     function bukaModalUpload() {
@@ -136,5 +152,24 @@
     function tutupModalUpload() {
         document.getElementById('modalUpload').style.display = 'none';
     }
+
+    // Fungsi Preview
+    function bukaPreview(url, title) {
+        document.getElementById('previewTitle').innerText = title;
+        document.getElementById('previewIframe').src = url;
+        document.getElementById('modalPreview').style.display = 'flex';
+    }
+
+    function tutupPreview() {
+        document.getElementById('modalPreview').style.display = 'none';
+        document.getElementById('previewIframe').src = ''; // Hentikan loading file
+    }
+
+    // Menutup preview jika klik di luar kotak putih
+    document.getElementById('modalPreview').addEventListener('click', function(e) {
+        if (e.target === this) {
+            tutupPreview();
+        }
+    });
 </script>
 @endsection
