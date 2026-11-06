@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StudentArchive - @yield('title', 'Kurikulum')</title>
+    <title>StudentArchive - Kurikulum</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style> body { font-family: 'Inter', sans-serif; } </style>
@@ -11,7 +11,7 @@
 <body class="bg-[#F4F6F9] text-gray-800 overflow-hidden">
     <div class="flex h-screen overflow-hidden">
         
-        <!-- OVERLAY GELAP (Mobile) -->
+        <!-- OVERLAY GELAP -->
         <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/50 z-30 hidden md:hidden transition-opacity"></div>
 
         <!-- SIDEBAR -->
@@ -76,6 +76,7 @@
                 </a>
             </nav>
 
+            <!-- Profil & Logout -->
             <div class="p-4 border-t border-white/10">
                 <div class="flex items-center space-x-3 p-2 rounded-xl">
                     <div class="w-9 h-9 bg-purple-600 rounded-full flex items-center justify-center text-sm font-bold">
@@ -85,12 +86,10 @@
                         <p class="text-sm font-semibold truncate">{{ Auth::user()->name ?? 'Kurikulum' }}</p>
                         <p class="text-[10px] text-gray-400 capitalize">Kurikulum</p>
                     </div>
-                    <form method="POST" action="{{ route('logout') }}">
-                        @csrf
-                        <button type="submit" class="text-gray-400 hover:text-red-400 transition" title="Logout">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
-                        </button>
-                    </form>
+                    <!-- TOMBOL LOGOUT MEMANGGIL MODAL -->
+                    <button type="button" onclick="document.getElementById('modalLogout').style.display = 'flex'" class="text-gray-400 hover:text-red-400 transition" title="Logout">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                    </button>
                 </div>
             </div>
         </aside>
@@ -102,19 +101,19 @@
                     <button onclick="toggleSidebar()" class="md:hidden text-gray-500 hover:text-gray-800">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
                     </button>
-                    <span class="font-medium text-gray-800 text-sm md:text-base">@yield('title', 'Dashboard')</span>
+                    <span class="font-medium text-gray-800 hidden sm:block">@yield('title', 'Dashboard')</span>
                 </div>
                 
-                <!-- FORM PENCARIAN DINAMIS MENYESUAIKAN HALAMAN -->
+                <!-- FORM PENCARIAN DINAMIS -->
                 @if(request()->routeIs('admin.siswa'))
                     <form action="{{ route('admin.siswa') }}" method="GET" class="relative w-full max-w-[200px] md:max-w-[300px]">
                         <svg class="w-4 h-4 text-gray-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari siswa..." class="w-full pl-9 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari siswa..." class="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
                     </form>
                 @elseif(request()->routeIs('admin.users'))
                     <form action="{{ route('admin.users') }}" method="GET" class="relative w-full max-w-[200px] md:max-w-[300px]">
                         <svg class="w-4 h-4 text-gray-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari pengguna..." class="w-full pl-9 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari pengguna..." class="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
                     </form>
                 @endif
             </header>
@@ -123,6 +122,25 @@
                 @yield('content')
             </div>
         </main>
+    </div>
+
+    <!-- MODAL KONFIRMASI LOGOUT -->
+    <div id="modalLogout" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(17, 24, 39, 0.7); z-index: 9999; align-items: center; justify-content: center; backdrop-filter: blur(4px); padding: 1rem;">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6" style="margin: auto; position: relative;">
+            <div class="w-12 h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center mb-4 mx-auto">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 text-center mb-2">Keluar Sistem?</h3>
+            <p class="text-sm text-gray-500 text-center mb-6">Apakah Anda yakin ingin keluar dari akun ini?</p>
+            
+            <div class="flex justify-center gap-3">
+                <button type="button" onclick="document.getElementById('modalLogout').style.display = 'none'" class="px-5 py-2.5 text-sm font-medium text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition">Batal</button>
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" class="px-5 py-2.5 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 shadow-md transition">Logout</button>
+                </form>
+            </div>
+        </div>
     </div>
 
     <script>

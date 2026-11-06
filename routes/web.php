@@ -58,8 +58,11 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::get('/users', [AdminController::class, 'users'])->name('users');
     Route::post('/users', [AdminController::class, 'storeUser'])->name('users.store');
     
-    // --- TAMBAHAN RUTE HAPUS USER ---
+    // Rute Hapus User
     Route::delete('/users/{id}', [AdminController::class, 'destroyUser'])->name('users.destroy');
+    
+    // Rute Hapus Dokumen oleh Admin (Tambahan Baru)
+    Route::delete('/documents/{id}', [AdminController::class, 'destroyDocument'])->name('documents.destroy');
     
     Route::get('/rekap', [AdminController::class, 'rekap'])->name('rekap');
     

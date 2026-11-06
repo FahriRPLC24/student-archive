@@ -169,6 +169,7 @@ class AdminController extends Controller
             'tanggal_lahir' => 'nullable|date', // Validasi input tanggal lahir
             'class_id' => 'nullable|exists:classes,id',
         ]);
+        
 
         // Cek password untuk Admin/Guru
         if ($request->role !== 'siswa' && (empty($request->email) || empty($request->password))) {
@@ -198,7 +199,19 @@ class AdminController extends Controller
 
         return redirect()->back()->with('success', 'User berhasil ditambahkan!');
     }
+    // TAMBAHKAN METHOD INI UNTUK MENGHAPUS DOKUMEN DARI PANEL ADMIN
+    public function destroyDocument($id)
+    {
+        $doc = Document::findOrFail($id);
+        
+        // Hapus file fisik dari storage
+        \Storage::disk('public')->delete($doc->file_path);
+        
+        // Hapus data dari database
+        $doc->delete();
 
+        return redirect()->back()->with('success', 'Dokumen berhasil dihapus dari sistem.');
+    }
     public function destroyUser($id)
     {
         $user = User::findOrFail($id);

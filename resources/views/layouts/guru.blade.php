@@ -11,7 +11,6 @@
 <body class="bg-[#F4F6F9] text-gray-800 overflow-hidden">
     <div class="flex h-screen overflow-hidden">
         
-        <!-- OVERLAY GELAP -->
         <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/50 z-30 hidden md:hidden transition-opacity"></div>
 
         <!-- SIDEBAR GURU -->
@@ -31,7 +30,6 @@
                 </button>
             </div>
 
-            <!-- Navigasi Guru -->
             <nav class="flex-1 px-2 mt-4 space-y-1">
                 <a href="{{ route('guru.dashboard') }}" class="flex items-center space-x-3 {{ request()->routeIs('guru.dashboard') ? 'bg-blue-600 text-white' : 'text-gray-400 hover:bg-white/5 hover:text-white' }} px-3 py-2.5 rounded-lg transition">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
@@ -53,13 +51,11 @@
                 <div class="text-[10px] text-gray-500 mb-4 leading-relaxed hidden sm:block">
                     Dashboard → Data & Dokumen → Laporan.
                 </div>
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <button type="submit" class="flex items-center space-x-2 text-red-400 hover:text-red-300 transition text-[13px] font-medium">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
-                        <span>Logout</span>
-                    </button>
-                </form>
+                <!-- TOMBOL LOGOUT MEMANGGIL MODAL -->
+                <button type="button" onclick="document.getElementById('modalLogout').style.display = 'flex'" class="flex items-center space-x-2 text-red-400 hover:text-red-300 transition text-[13px] font-medium">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                    <span>Logout</span>
+                </button>
             </div>
         </aside>
 
@@ -88,6 +84,25 @@
                 @yield('content')
             </div>
         </main>
+    </div>
+
+    <!-- MODAL KONFIRMASI LOGOUT -->
+    <div id="modalLogout" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(17, 24, 39, 0.7); z-index: 9999; align-items: center; justify-content: center; backdrop-filter: blur(4px); padding: 1rem;">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6" style="margin: auto; position: relative;">
+            <div class="w-12 h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center mb-4 mx-auto">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 text-center mb-2">Keluar Sistem?</h3>
+            <p class="text-sm text-gray-500 text-center mb-6">Apakah Anda yakin ingin keluar dari akun ini?</p>
+            
+            <div class="flex justify-center gap-3">
+                <button type="button" onclick="document.getElementById('modalLogout').style.display = 'none'" class="px-5 py-2.5 text-sm font-medium text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition">Batal</button>
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" class="px-5 py-2.5 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 shadow-md transition">Logout</button>
+                </form>
+            </div>
+        </div>
     </div>
 
     <script>

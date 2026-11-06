@@ -115,14 +115,10 @@
 
 <script>
     function bukaDetailSiswa(siswa) {
-        // 1. Tampilkan Modal Detail
         document.getElementById('modalDetail').style.display = 'flex';
-        
-        // 2. Isi Header
         document.getElementById('modalNamaSiswa').innerText = siswa.name;
         document.getElementById('modalNisSiswa').innerText = 'NIS: ' + (siswa.nis || '-') + ' | Kelas: ' + (siswa.class_room ? siswa.class_room.name : '-');
 
-        // 3. Render List Dokumen
         const container = document.getElementById('modalListDokumen');
         container.innerHTML = ''; 
 
@@ -143,8 +139,17 @@
                     statusBadge = '<span class="bg-red-100 text-red-700 text-[10px] font-bold px-3 py-1 rounded-full">✕ Ditolak</span>';
                 }
                 
-                // TOMBOL LIHAT FILE MEMANGGIL MODAL PREVIEW
-                actionBtn = `<button type="button" onclick="bukaPreview('${doc.file_path}', '${siswa.name}')" class="text-blue-600 hover:text-blue-800 hover:underline text-xs font-bold bg-blue-50 px-3 py-1.5 rounded-lg border border-blue-100">Lihat File</button>`;
+                // TAMBAHKAN TOMBOL HAPUS (MERAH)
+                actionBtn = `
+                    <div class="flex gap-2 justify-end">
+                        <button type="button" onclick="bukaPreview('${doc.file_path}', '${siswa.name}')" class="text-blue-600 hover:text-blue-800 hover:underline text-xs font-bold bg-blue-50 px-3 py-1.5 rounded-lg border border-blue-100">Lihat</button>
+                        <form action="/admin/documents/${doc.id}" method="POST" class="inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus dokumen ini secara permanen?');">
+                            <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                            <input type="hidden" name="_method" value="DELETE">
+                            <button type="submit" class="text-red-600 hover:text-red-800 text-xs font-bold bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-lg border border-red-100 transition">Hapus</button>
+                        </form>
+                    </div>
+                `;
             } else {
                 statusBadge = '<span class="bg-gray-100 text-gray-500 text-[10px] font-bold px-3 py-1 rounded-full">Belum Ada</span>';
                 actionBtn = '<span class="text-gray-400 text-xs italic">-</span>';
@@ -166,7 +171,7 @@
                     <div class="w-32 text-center">
                         ${statusBadge}
                     </div>
-                    <div class="w-24 text-right">
+                    <div class="w-auto text-right">
                         ${actionBtn}
                     </div>
                 </div>
@@ -175,10 +180,8 @@
         }
     }
 
-    // Fungsi Preview File
     function bukaPreview(path, siswaName) {
         document.getElementById('previewTitle').innerText = 'Dokumen - ' + siswaName;
-        // Path dari JS tidak mengandung '/storage/', jadi kita tambahkan manual
         document.getElementById('previewIframe').src = '/storage/' + path;
         document.getElementById('modalPreview').style.display = 'flex';
     }
@@ -188,7 +191,6 @@
         document.getElementById('previewIframe').src = ''; 
     }
 
-    // Menutup preview jika klik di luar kotak putih
     document.getElementById('modalPreview').addEventListener('click', function(e) {
         if (e.target === this) {
             tutupPreview();
