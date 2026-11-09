@@ -4,10 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - StudentArchive</title>
+    
+    <!-- FAVICON BARU (SVG) -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%232563EB'%3E%3Crect width='24' height='24' rx='6' fill='%232563EB'/%3E%3Cpath d='M6 8h12v2H6V8zm0 3h12v7a1 1 0 01-1 1H7a1 1 0 01-1-1v-7zm3 3h6v2H9v-2z' fill='white'/%3E%3C/svg%3E">
+
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style> body { font-family: 'Plus Jakarta Sans', sans-serif; } </style>
 </head>
+<!-- ... sisa kode login ... -->
 <body class="bg-[#f8f9fa] flex items-center justify-center min-h-screen p-4 text-gray-800">
 
     <div class="bg-white rounded-[1.5rem] shadow-[0_0_40px_rgba(0,0,0,0.05)] flex flex-col md:flex-row w-full max-w-4xl overflow-hidden min-h-[600px] border border-gray-100">

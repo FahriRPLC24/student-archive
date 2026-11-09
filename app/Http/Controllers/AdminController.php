@@ -147,8 +147,8 @@ class AdminController extends Controller
         if ($search) {
             $query->where(function($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('nis', 'like', "%{$search}%")
-                  ->orWhere('nip', 'like', "%{$search}%");
+                    ->orWhere('nis', 'like', "%{$search}%")
+                    ->orWhere('nip', 'like', "%{$search}%");
             });
         }
 
@@ -157,6 +157,7 @@ class AdminController extends Controller
         
         return view('admin.users', compact('users', 'classes', 'search'));
     }
+
     public function storeUser(Request $request)
     {
         $request->validate([
@@ -166,17 +167,14 @@ class AdminController extends Controller
             'role' => 'required|in:admin,guru,siswa',
             'nis' => 'nullable|string|unique:users',
             'nip' => 'nullable|string|unique:users',
-            'tanggal_lahir' => 'nullable|date', // Validasi input tanggal lahir
+            'tanggal_lahir' => 'nullable|date',
             'class_id' => 'nullable|exists:classes,id',
         ]);
-        
 
-        // Cek password untuk Admin/Guru
         if ($request->role !== 'siswa' && (empty($request->email) || empty($request->password))) {
             return redirect()->back()->withErrors(['email' => 'Email dan Password wajib diisi untuk Kurikulum/Guru.']);
         }
 
-        // LOGIKA PENYIMPANAN
         $data = [
             'name' => $request->name,
             'email' => $request->role === 'siswa' ? null : $request->email,
@@ -199,19 +197,7 @@ class AdminController extends Controller
 
         return redirect()->back()->with('success', 'User berhasil ditambahkan!');
     }
-    // TAMBAHKAN METHOD INI UNTUK MENGHAPUS DOKUMEN DARI PANEL ADMIN
-    public function destroyDocument($id)
-    {
-        $doc = Document::findOrFail($id);
-        
-        // Hapus file fisik dari storage
-        \Storage::disk('public')->delete($doc->file_path);
-        
-        // Hapus data dari database
-        $doc->delete();
 
-        return redirect()->back()->with('success', 'Dokumen berhasil dihapus dari sistem.');
-    }
     public function destroyUser($id)
     {
         $user = User::findOrFail($id);
@@ -225,6 +211,19 @@ class AdminController extends Controller
         $user->delete();
 
         return redirect()->back()->with('success', 'Pengguna berhasil dihapus dari sistem.');
+    }
+
+    public function destroyDocument($id)
+    {
+        $doc = Document::findOrFail($id);
+        
+        // Hapus file fisik dari storage
+        \Storage::disk('public')->delete($doc->file_path);
+        
+        // Hapus data dari database
+        $doc->delete();
+
+        return redirect()->back()->with('success', 'Dokumen berhasil dihapus dari sistem.');
     }
 
     // ================= UPLOAD KOLEKTIF =================
@@ -305,22 +304,36 @@ class AdminController extends Controller
     // ================= REKAP =================
     public function rekap()
     {
+        // 1. Hitung total jenis dokumen wajib di sistem
         $totalDocTypes = DocumentType::where('is_required', true)->count();
+        
+        // 2. Ambil data kelas beserta jumlah siswanya
         $classes = ClassRoom::withCount(['students' => function ($query) {
             $query->where('role', 'siswa');
         }])->get();
 
+        // 3. Hitung persentase per kelas
         $rekapKelas = [];
         foreach ($classes as $class) {
             $jumlahSiswa = $class->students_count;
             $totalWajibKelas = $jumlahSiswa * $totalDocTypes;
-            $docVerified = Document::whereHas('student', function($q) use ($class) {
-                $q->where('class_id', $class->id);
-            })->where('status', 'verified')->count();
+            
+            // Hitung dokumen terverifikasi milik siswa di kelas ini
+            $docVerified = Document::where('status', 'verified')
+                ->whereHas('student', function($q) use ($class) {
+                    $q->where('class_id', $class->id);
+                })->count();
 
+            // Rumus Persentase: (Total Verified / Total Wajib) * 100
             $persen = $totalWajibKelas > 0 ? round(($docVerified / $totalWajibKelas) * 100) : 0;
-            $rekapKelas[] = ['name' => $class->name, 'siswa' => $jumlahSiswa, 'persen' => $persen];
+            
+            $rekapKelas[] = [
+                'name' => $class->name,
+                'siswa' => $jumlahSiswa,
+                'persen' => $persen
+            ];
         }
+
         return view('admin.rekap', compact('rekapKelas', 'totalDocTypes'));
     }
 }
