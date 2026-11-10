@@ -14,7 +14,7 @@
 </head>
 <!-- ... sisa kode layout ... -->
 <body class="bg-[#F4F6F9] text-gray-800 overflow-hidden">
-    <div class="flex h-screen overflow-hidden">
+    <div class="flex h-dvh overflow-hidden">
         
         <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/50 z-30 hidden md:hidden transition-opacity"></div>
 

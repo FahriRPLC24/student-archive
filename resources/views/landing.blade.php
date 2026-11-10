@@ -29,9 +29,9 @@
                 <a href="#fitur" class="hover:text-white transition">Fitur</a>
                 <a href="#peran" class="hover:text-white transition">Peran Pengguna</a>
             </div>
-            <a href="{{ route('login') }}" class="bg-[#2563EB] hover:bg-blue-600 text-white text-sm font-bold px-6 py-2.5 rounded-lg transition shadow-lg shadow-blue-500/30">
-                Masuk Sistem
-            </a>
+            <a href="{{ route('login') }}" class="bg-[#2563EB] hover:bg-blue-600 text-white text-xs md:text-sm font-bold px-4 md:px-6 py-2 md:py-2.5 rounded-lg transition shadow-lg shadow-blue-500/30">
+    Masuk Sistem
+</a>
         </div>
     </nav>
 
